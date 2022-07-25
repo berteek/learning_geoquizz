@@ -1,0 +1,67 @@
+package com.berteek.geoquizz
+
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+
+class GeoQuizzViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
+
+    val questions = listOf(
+        Question(R.string.question_australia, true),
+        Question(R.string.question_oceans, true),
+        Question(R.string.question_middle_east, false),
+        Question(R.string.question_africa, false),
+        Question(R.string.question_americas, true),
+        Question(R.string.question_asia, true)
+    )
+    private var currentQuestionIndex: Int
+        get() = savedStateHandle.get(CURRENT_INDEX_KEY) ?: 0
+        set(value) = savedStateHandle.set(CURRENT_INDEX_KEY, value)
+
+    val currentQuestionCorrectAnswer: Boolean
+        get() = questions[currentQuestionIndex].correctAnswer
+
+    val currentQuestionText: Int
+        get() = questions[currentQuestionIndex].textResId
+
+    val currentQuestionUserAnswer: Boolean?
+        get() = questions[currentQuestionIndex].userAnswer
+
+    fun nextQuestion() {
+        if (currentQuestionIndex + 1 < questions.size) {
+            currentQuestionIndex++
+        }
+    }
+
+    fun previousQuestion() {
+        if (currentQuestionIndex - 1 >= 0) {
+            currentQuestionIndex--
+        }
+    }
+
+    fun calculateCorrectAnswered(): Int {
+        var correctAnswered = 0
+
+        for (question in questions)
+            if (question.userAnswer == question.correctAnswer)
+                correctAnswered++
+
+        return correctAnswered
+    }
+
+    fun checkIfAllAnswered(): Boolean {
+        for (question in questions)
+            if (question.userAnswer == null)
+                return false
+        return true
+    }
+
+    fun registerUserAnswer(answer: Boolean) {
+        if (questions[currentQuestionIndex].userAnswer == null)
+            questions[currentQuestionIndex].userAnswer = answer
+    }
+
+    companion object {
+        private const val TAG = "GeoQuizzViewModel"
+        const val CURRENT_INDEX_KEY = "CURRENT_INDEX_KEY"
+    }
+}
