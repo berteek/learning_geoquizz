@@ -26,13 +26,13 @@ class CheatActivity : AppCompatActivity() {
 
         binding.showAnswerButton.setOnClickListener {
             binding.answerText.setText(if (answer) R.string.true_button else R.string.false_button)
-            setAnswerShownResult(true)
+            setAnswerShownResult()
         }
     }
 
-    private fun setAnswerShownResult(answerShown: Boolean) {
+    private fun setAnswerShownResult() {
         val resultIntent = Intent().apply {
-            putExtra(EXTRA_ANSWER_SHOWN, answerShown)
+            putExtra(EXTRA_ANSWER_SHOWN, true)
         }
         setResult(Activity.RESULT_CANCELED, resultIntent)
     }
