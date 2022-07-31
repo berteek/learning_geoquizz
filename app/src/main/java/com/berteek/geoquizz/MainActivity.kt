@@ -3,6 +3,7 @@ package com.berteek.geoquizz
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.berteek.geoquizz.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
@@ -12,6 +13,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private val viewModel: GeoQuizzViewModel by viewModels()
+
+    private val cheatLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,26 +51,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
+        binding.questionText.setOnClickListener {
+            viewModel.nextQuestion()
+            updateQuestion()
+        }
+
         binding.trueButton.setOnClickListener {
             answerButtonSubroutine(true)
         }
-
         binding.falseButton.setOnClickListener {
             answerButtonSubroutine(false)
+        }
+
+        binding.cheatButton.setOnClickListener {
+            val intent = CheatActivity.newIntent(this@MainActivity, viewModel.currentQuestionCorrectAnswer)
+            cheatLauncher.launch(intent)
         }
 
         binding.nextButton.setOnClickListener {
             viewModel.nextQuestion()
             updateQuestion()
         }
-
         binding.previousButton.setOnClickListener {
             viewModel.previousQuestion()
-            updateQuestion()
-        }
-
-        binding.questionText.setOnClickListener {
-            viewModel.nextQuestion()
             updateQuestion()
         }
     }
