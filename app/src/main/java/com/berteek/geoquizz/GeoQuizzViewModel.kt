@@ -30,9 +30,13 @@ class GeoQuizzViewModel(private val savedStateHandle: SavedStateHandle) : ViewMo
         get() = cheatedQuestions.contains(currentQuestionIndex)
 
     private var cheatedQuestions: HashSet<Int>
-        get() = savedStateHandle.get(CHEATED_QUESTIONS_KEY) ?: hashSetOf()
-        set(value) =
-            savedStateHandle.set(CHEATED_QUESTIONS_KEY, value)
+        get() = savedStateHandle.get(CHEATED_QUESTIONS_KEY) ?: initializeCheatedQuestions()
+        set(value) = savedStateHandle.set(CHEATED_QUESTIONS_KEY, value)
+
+    private fun initializeCheatedQuestions(): HashSet<Int> {
+        cheatedQuestions = hashSetOf()
+        return cheatedQuestions
+    }
 
     fun nextQuestion() {
         if (currentQuestionIndex + 1 < questions.size) {
@@ -70,9 +74,7 @@ class GeoQuizzViewModel(private val savedStateHandle: SavedStateHandle) : ViewMo
     }
 
     fun markCurrentQuestionAsCheated() {
-        val updatedCheatedQuestions = cheatedQuestions
-        updatedCheatedQuestions.add(currentQuestionIndex)
-        cheatedQuestions = updatedCheatedQuestions
+        cheatedQuestions.add(currentQuestionIndex)
     }
 
     companion object {
