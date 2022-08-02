@@ -1,6 +1,5 @@
 package com.berteek.geoquizz
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 
@@ -31,18 +30,9 @@ class GeoQuizzViewModel(private val savedStateHandle: SavedStateHandle) : ViewMo
         get() = cheatedQuestions.contains(currentQuestionIndex)
 
     private var cheatedQuestions: HashSet<Int>
-        get() = savedStateHandle.get(CHEATED_QUESTIONS_KEY) ?: getHashSetOf()
-        set(value) = setHashSet(value)
-
-    private fun setHashSet(value: HashSet<Int>) {
-        Log.d("CHEATED", "setting hashSet")
-        savedStateHandle.set(CHEATED_QUESTIONS_KEY, value)
-    }
-
-    private fun getHashSetOf(): HashSet<Int> {
-        Log.d("CHEATED", "getting new HashSet")
-        return hashSetOf()
-    }
+        get() = savedStateHandle.get(CHEATED_QUESTIONS_KEY) ?: hashSetOf()
+        set(value) =
+            savedStateHandle.set(CHEATED_QUESTIONS_KEY, value)
 
     fun nextQuestion() {
         if (currentQuestionIndex + 1 < questions.size) {
@@ -83,7 +73,6 @@ class GeoQuizzViewModel(private val savedStateHandle: SavedStateHandle) : ViewMo
         val updatedCheatedQuestions = cheatedQuestions
         updatedCheatedQuestions.add(currentQuestionIndex)
         cheatedQuestions = updatedCheatedQuestions
-        Log.d("CHEATED", cheatedQuestions.toString())
     }
 
     companion object {

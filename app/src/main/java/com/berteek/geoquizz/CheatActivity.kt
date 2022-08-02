@@ -54,8 +54,6 @@ class CheatActivity : AppCompatActivity() {
             }
         }
 
-        const val IS_SHOWING_ANSWER_KEY = "IS_SHOWING_ANSWER_KEY"
-
         const val EXTRA_ANSWER = "com.berteek.android.geoquizz.answer"
         const val EXTRA_ANSWER_SHOWN = "com.berteek.android.geoquizz.answer_shown"
     }
