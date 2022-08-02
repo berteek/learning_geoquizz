@@ -5,14 +5,15 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
+import androidx.lifecycle.SavedStateHandle
 import com.berteek.geoquizz.databinding.ActivityCheatBinding
-
-private const val EXTRA_ANSWER = "com.berteek.android.geoquizz.answer"
-const val EXTRA_ANSWER_SHOWN = "com.berteek.android.geoquizz.answer_shown"
 
 class CheatActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCheatBinding
+
+    private val viewModel: CheatViewModel by viewModels()
 
     private var answer = false
 
@@ -24,17 +25,26 @@ class CheatActivity : AppCompatActivity() {
 
         answer = intent.getBooleanExtra(EXTRA_ANSWER, false)
 
+        if (viewModel.isShowingAnswer) {
+            showAnswer()
+        }
+
         binding.showAnswerButton.setOnClickListener {
-            binding.answerText.setText(if (answer) R.string.true_button else R.string.false_button)
-            setAnswerShownResult()
+            showAnswer()
         }
     }
 
+    private fun showAnswer() {
+        viewModel.isShowingAnswer = true
+        binding.answerText.setText(if (answer) R.string.true_button else R.string.false_button)
+        setAnswerShownResult()
+    }
+
     private fun setAnswerShownResult() {
-        val resultIntent = Intent().apply {
+        val data = Intent().apply {
             putExtra(EXTRA_ANSWER_SHOWN, true)
         }
-        setResult(Activity.RESULT_CANCELED, resultIntent)
+        setResult(Activity.RESULT_OK, data)
     }
 
     companion object {
@@ -43,5 +53,10 @@ class CheatActivity : AppCompatActivity() {
                 putExtra(EXTRA_ANSWER, answer)
             }
         }
+
+        const val IS_SHOWING_ANSWER_KEY = "IS_SHOWING_ANSWER_KEY"
+
+        const val EXTRA_ANSWER = "com.berteek.android.geoquizz.answer"
+        const val EXTRA_ANSWER_SHOWN = "com.berteek.android.geoquizz.answer_shown"
     }
 }

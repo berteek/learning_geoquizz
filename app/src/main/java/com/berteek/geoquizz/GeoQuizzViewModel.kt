@@ -1,5 +1,6 @@
 package com.berteek.geoquizz
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 
@@ -26,6 +27,23 @@ class GeoQuizzViewModel(private val savedStateHandle: SavedStateHandle) : ViewMo
     val currentQuestionUserAnswer: Boolean?
         get() = questions[currentQuestionIndex].userAnswer
 
+    val hasCheatedOnCurrentQuestion: Boolean
+        get() = cheatedQuestions.contains(currentQuestionIndex)
+
+    private var cheatedQuestions: HashSet<Int>
+        get() = savedStateHandle.get(CHEATED_QUESTIONS_KEY) ?: getHashSetOf()
+        set(value) = setHashSet(value)
+
+    private fun setHashSet(value: HashSet<Int>) {
+        Log.d("CHEATED", "setting hashSet")
+        savedStateHandle.set(CHEATED_QUESTIONS_KEY, value)
+    }
+
+    private fun getHashSetOf(): HashSet<Int> {
+        Log.d("CHEATED", "getting new HashSet")
+        return hashSetOf()
+    }
+
     fun nextQuestion() {
         if (currentQuestionIndex + 1 < questions.size) {
             currentQuestionIndex++
@@ -41,9 +59,10 @@ class GeoQuizzViewModel(private val savedStateHandle: SavedStateHandle) : ViewMo
     fun calculateCorrectAnswered(): Int {
         var correctAnswered = 0
 
-        for (question in questions)
-            if (question.userAnswer == question.correctAnswer)
+        questions.forEachIndexed { index, question ->
+            if (question.userAnswer == question.correctAnswer && !cheatedQuestions.contains(index))
                 correctAnswered++
+        }
 
         return correctAnswered
     }
@@ -60,8 +79,16 @@ class GeoQuizzViewModel(private val savedStateHandle: SavedStateHandle) : ViewMo
             questions[currentQuestionIndex].userAnswer = answer
     }
 
+    fun markCurrentQuestionAsCheated() {
+        val updatedCheatedQuestions = cheatedQuestions
+        updatedCheatedQuestions.add(currentQuestionIndex)
+        cheatedQuestions = updatedCheatedQuestions
+        Log.d("CHEATED", cheatedQuestions.toString())
+    }
+
     companion object {
         private const val TAG = "GeoQuizzViewModel"
         const val CURRENT_INDEX_KEY = "CURRENT_INDEX_KEY"
+        const val CHEATED_QUESTIONS_KEY = "CHEATED_QUESTIONS_KEY"
     }
 }

@@ -17,7 +17,10 @@ class MainActivity : AppCompatActivity() {
     private val cheatLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-
+        val isCurrentQuestionCheated = result.data?.getBooleanExtra(CheatActivity.EXTRA_ANSWER_SHOWN, false) ?: false
+        if (result.resultCode == RESULT_OK && isCurrentQuestionCheated) {
+            viewModel.markCurrentQuestionAsCheated()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,11 +89,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkAnswer() {
-        val message =
-            if (viewModel.currentQuestionCorrectAnswer == viewModel.currentQuestionUserAnswer)
-                R.string.correct_message
-            else
-                R.string.incorrect_message
+        val message = when {
+            viewModel.hasCheatedOnCurrentQuestion -> R.string.judgement_snackbar
+            viewModel.currentQuestionCorrectAnswer == viewModel.currentQuestionUserAnswer -> R.string.correct_message
+            else -> R.string.incorrect_message
+        }
 
         Snackbar.make(
             binding.root,
