@@ -13,9 +13,9 @@ class GeoQuizzViewModel(private val savedStateHandle: SavedStateHandle) : ViewMo
         Question(R.string.question_americas, true),
         Question(R.string.question_asia, true)
     )
-    private var currentQuestionIndex: Int
+    var currentQuestionIndex: Int
         get() = savedStateHandle.get(CURRENT_INDEX_KEY) ?: 0
-        set(value) = savedStateHandle.set(CURRENT_INDEX_KEY, value)
+        private set(value) = savedStateHandle.set(CURRENT_INDEX_KEY, value)
 
     val currentQuestionCorrectAnswer: Boolean
         get() = questions[currentQuestionIndex].correctAnswer

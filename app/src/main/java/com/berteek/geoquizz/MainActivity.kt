@@ -62,6 +62,9 @@ class MainActivity : AppCompatActivity() {
             setButtonsIsEnabled(true)
         else
             setButtonsIsEnabled(false)
+
+        binding.previousButton.isEnabled = viewModel.currentQuestionIndex != 0
+        binding.nextButton.isEnabled = viewModel.currentQuestionIndex < viewModel.questions.size - 1
     }
 
     private fun setupListeners() {
