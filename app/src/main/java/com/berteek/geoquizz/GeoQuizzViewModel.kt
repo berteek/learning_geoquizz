@@ -26,6 +26,11 @@ class GeoQuizzViewModel(private val savedStateHandle: SavedStateHandle) : ViewMo
     val currentQuestionUserAnswer: Boolean?
         get() = questions[currentQuestionIndex].userAnswer
 
+
+    var cheatsLeft: Int
+        get() = savedStateHandle.get(CHEATS_LEFT_KEY) ?: 3
+        private set(value) = savedStateHandle.set(CHEATS_LEFT_KEY, value)
+
     val hasCheatedOnCurrentQuestion: Boolean
         get() = cheatedQuestions.contains(currentQuestionIndex)
 
@@ -37,6 +42,12 @@ class GeoQuizzViewModel(private val savedStateHandle: SavedStateHandle) : ViewMo
         cheatedQuestions = hashSetOf()
         return cheatedQuestions
     }
+
+    fun markCurrentQuestionAsCheated() {
+        cheatedQuestions.add(currentQuestionIndex)
+        cheatsLeft--
+    }
+
 
     fun nextQuestion() {
         if (currentQuestionIndex + 1 < questions.size) {
@@ -53,8 +64,8 @@ class GeoQuizzViewModel(private val savedStateHandle: SavedStateHandle) : ViewMo
     fun calculateCorrectAnswered(): Int {
         var correctAnswered = 0
 
-        questions.forEachIndexed { index, question ->
-            if (question.userAnswer == question.correctAnswer && !cheatedQuestions.contains(index))
+        questions.forEach { question ->
+            if (question.userAnswer == question.correctAnswer)
                 correctAnswered++
         }
 
@@ -73,12 +84,11 @@ class GeoQuizzViewModel(private val savedStateHandle: SavedStateHandle) : ViewMo
             questions[currentQuestionIndex].userAnswer = answer
     }
 
-    fun markCurrentQuestionAsCheated() {
-        cheatedQuestions.add(currentQuestionIndex)
-    }
 
     companion object {
         private const val TAG = "GeoQuizzViewModel"
+
+        const val CHEATS_LEFT_KEY = "CHEATS_LEFT_KEY"
         const val CURRENT_INDEX_KEY = "CURRENT_INDEX_KEY"
         const val CHEATED_QUESTIONS_KEY = "CHEATED_QUESTIONS_KEY"
     }

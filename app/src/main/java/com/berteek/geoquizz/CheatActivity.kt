@@ -3,10 +3,10 @@ package com.berteek.geoquizz
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.lifecycle.SavedStateHandle
 import com.berteek.geoquizz.databinding.ActivityCheatBinding
 
 class CheatActivity : AppCompatActivity() {
@@ -32,6 +32,8 @@ class CheatActivity : AppCompatActivity() {
         binding.showAnswerButton.setOnClickListener {
             showAnswer()
         }
+
+        binding.apiLevelText.text = getString(R.string.api_level, Build.VERSION.SDK_INT)
     }
 
     private fun showAnswer() {

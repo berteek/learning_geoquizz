@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
         val isCurrentQuestionCheated = result.data?.getBooleanExtra(CheatActivity.EXTRA_ANSWER_SHOWN, false) ?: false
         if (result.resultCode == RESULT_OK && isCurrentQuestionCheated) {
             viewModel.markCurrentQuestionAsCheated()
+            updateCheats()
         }
     }
 
@@ -31,13 +32,23 @@ class MainActivity : AppCompatActivity() {
 
         updateQuestion()
         setupListeners()
+        updateCheats()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-        Log.d(TAG, "Activity destroyed")
+    private fun updateCheats() {
+        updateCheatsLeftText()
+        disableCheatButtonIfNoCheatsLeft()
     }
+
+    private fun updateCheatsLeftText() {
+        binding.cheatsLeftText.text = getString(R.string.cheats_left, viewModel.cheatsLeft)
+    }
+
+    private fun disableCheatButtonIfNoCheatsLeft() {
+        if (viewModel.cheatsLeft <= 0)
+            binding.cheatButton.isEnabled = false
+    }
+
 
     private fun setButtonsIsEnabled(isEnabled: Boolean) {
         binding.trueButton.isEnabled = isEnabled
